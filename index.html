@@ -1,0 +1,1237 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>مغامرات أصدقاء الشجرة 🌳</title>
+<style>
+:root{
+  --green-dark:#1b5e20;
+  --green:#4caf50;
+  --green-light:#81c784;
+  --brown:#8d6e63;
+  --yellow:#ffca28;
+  --red:#ef5350;
+  --shadow:0 6px 0 rgba(0,0,0,0.15);
+  font-size:19px;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;height:100%;}
+body{
+  font-family:'Tahoma','Segoe UI',sans-serif;
+  direction:rtl;
+  overflow:hidden;
+  background:#9ccc65;
+  user-select:none;
+}
+h1,h2,h3{color:var(--green-dark); margin:8px 0;}
+#app{position:relative;width:100vw;height:100vh;overflow:hidden;}
+
+/* ======= شريط علوي ======= */
+#topbar{
+  position:fixed;top:0;left:0;right:0;height:62px;
+  background:rgba(255,255,255,.92);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 18px;z-index:500;
+  box-shadow:0 2px 10px rgba(0,0,0,.15);
+}
+.icon-btn{
+  background:#fff;border:2px solid var(--green);border-radius:50%;
+  width:48px;height:48px;font-size:1.5rem;cursor:pointer;
+}
+#starsDisplay{font-size:1.3rem;font-weight:bold;color:#f57f17;}
+
+/* ======= الشاشات ======= */
+.screen{
+  display:none;
+  position:absolute;top:0;left:0;right:0;bottom:0;
+  padding:78px 20px 30px;
+  overflow-y:auto;
+  flex-direction:column;
+  align-items:center;
+  text-align:center;
+}
+.screen.active{display:flex;}
+.garden-bg{
+  background:linear-gradient(to bottom, #aee7ff 0%, #cdf3ff 38%, #c8e6a0 39%, #9ccc65 100%);
+}
+
+/* ======= زخارف السماء ======= */
+.sun{position:absolute;top:25px;left:40px;width:70px;height:70px;background:#ffeb3b;border-radius:50%;box-shadow:0 0 40px #ffeb3b99;}
+.cloud{position:absolute;background:#fff;border-radius:50px;opacity:.9;animation:drift 20s linear infinite;}
+.cloud1{width:90px;height:35px;top:55px;right:10%;}
+.cloud2{width:70px;height:28px;top:100px;right:28%;animation-duration:28s;}
+@keyframes drift{0%{transform:translateX(0);}50%{transform:translateX(-40px);}100%{transform:translateX(0);}}
+
+/* ======= أزرار عامة ======= */
+.big-btn{
+  font-size:1.35rem;
+  padding:16px 30px;
+  border:none;
+  border-radius:50px;
+  background:var(--green);
+  color:#fff;
+  box-shadow:var(--shadow);
+  cursor:pointer;
+  margin:8px;
+  font-weight:bold;
+  transition:transform .12s;
+}
+.big-btn:active{transform:translateY(4px); box-shadow:0 2px 0 rgba(0,0,0,.15);}
+.big-btn.primary{background:var(--yellow); color:#5d4037; font-size:1.5rem;}
+.big-btn:disabled{opacity:.5;cursor:default;}
+.choice-good{background:#81c784;color:#1b5e20;}
+.choice-bad{background:#e57373;color:#5d1a1a;}
+.btn-row{display:flex;gap:15px;justify-content:center;flex-wrap:wrap;margin:14px 0;}
+.back-btn{
+  background:#90a4ae;color:#fff;border:none;border-radius:30px;
+  padding:10px 22px;font-size:1rem;cursor:pointer;margin-bottom:6px;
+}
+
+/* ======= الشاشة الرئيسية ======= */
+.title{font-size:2.2rem;text-shadow:2px 2px 0 #fff;margin-bottom:4px;}
+.slogan{font-size:1.25rem;color:#33691e;margin-top:0;}
+.home-scene{display:flex;align-items:flex-end;justify-content:center;gap:6px;margin:6px 0;}
+.home-buttons{display:flex;flex-wrap:wrap;gap:14px;justify-content:center;margin:14px 0;}
+.stars-home{font-size:1.25rem;font-weight:bold;color:#f57f17;}
+
+/* ======= كيف ألعب ======= */
+.howto-box{background:rgba(255,255,255,.92);border-radius:20px;padding:26px;max-width:620px;margin-top:10px;box-shadow:var(--shadow);}
+.howto-list{text-align:right;line-height:2;font-size:1.1rem;padding-right:20px;}
+
+/* ======= الخريطة ======= */
+.map-path{display:flex;gap:26px;flex-wrap:wrap;justify-content:center;margin:26px 0;}
+.stage-node{
+  background:#fff;border:none;border-radius:20px;
+  padding:22px;width:170px;cursor:pointer;
+  box-shadow:var(--shadow);
+  transition:transform .15s;
+}
+.stage-node:active{transform:translateY(3px);}
+.node-icon{font-size:3.2rem;}
+.node-title{font-weight:bold;font-size:1.1rem;margin:8px 0;}
+.node-stars{font-size:1.2rem;color:#f57f17;}
+
+/* ======= رأس المرحلة ======= */
+.stage-header{width:100%;max-width:850px;}
+
+/* ======= المهمة 1 ======= */
+.instruction{font-size:1.15rem;color:#33691e;font-weight:bold;}
+.tools-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:18px;
+  max-width:650px;margin:16px auto;width:100%;
+}
+.tool-card{
+  background:#fff;border-radius:18px;padding:14px;
+  box-shadow:var(--shadow);cursor:pointer;position:relative;
+  transition:transform .12s;touch-action:manipulation;
+}
+.tool-card:active{transform:scale(.97);}
+.tool-card.correct-selected{background:#c8e6c9;cursor:default;}
+.tool-card .emoji-icon{font-size:3.2rem;}
+.tool-label{margin-top:6px;font-weight:bold;font-size:1rem;}
+.badge-check{position:absolute;top:4px;left:4px;background:var(--green-dark);color:#fff;border-radius:50%;width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-size:.9rem;}
+.shake{animation:shakeAnim .4s;}
+@keyframes shakeAnim{0%,100%{transform:translateX(0);}25%{transform:translateX(-8px);}75%{transform:translateX(8px);}}
+
+/* ======= المهمة 2 ======= */
+.cards-source{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;min-height:70px;margin:12px auto;max-width:900px;}
+.step-card{
+  background:#fff176;border:3px solid #fbc02d;border-radius:14px;
+  padding:13px 16px;font-weight:bold;cursor:grab;touch-action:none;
+  box-shadow:var(--shadow);font-size:1.02rem;max-width:230px;
+}
+.step-card.dragging-card{opacity:.85;cursor:grabbing;z-index:2000;}
+.slots-row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin:16px auto;}
+.step-slot{
+  width:170px;min-height:85px;border:3px dashed #9e9e9e;border-radius:14px;
+  display:flex;align-items:center;justify-content:center;position:relative;
+  background:rgba(255,255,255,.4);
+}
+.slot-number{position:absolute;top:-13px;right:-13px;background:var(--green-dark);color:#fff;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:bold;}
+.step-slot.slot-correct{border-color:var(--green-dark);background:rgba(200,230,201,.7);}
+
+/* ======= المهمة 3 ======= */
+.ground-area{
+  width:260px;height:190px;background:#a1887f;border-radius:20px;
+  margin:18px auto;display:flex;align-items:center;justify-content:center;
+  font-size:3.6rem;position:relative;cursor:pointer;border:4px solid #6d4c41;
+}
+.ground-flat{width:88%;height:18px;background:#795548;border-radius:50%;margin-top:55px;}
+.ground-planted{display:flex;flex-direction:column;align-items:center;}
+.ground-final{display:flex;flex-direction:column;align-items:center;position:relative;}
+.tools-row{display:flex;gap:22px;justify-content:center;margin-top:18px;flex-wrap:wrap;}
+.task3-tool{
+  background:#fff;border-radius:16px;padding:10px;box-shadow:var(--shadow);
+  cursor:grab;touch-action:none;display:flex;flex-direction:column;align-items:center;font-size:.95rem;font-weight:bold;
+}
+.task3-tool.tool-selected{outline:4px solid var(--yellow);}
+.task3-tool.tool-done{opacity:.35;pointer-events:none;}
+.task3-tool.dragging-tool{opacity:.85;cursor:grabbing;z-index:3000;}
+
+/* ======= المرحلة 2 ======= */
+.tree-display{margin:12px auto;}
+.options-row{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin:14px auto;max-width:700px;}
+.option-btn{
+  background:#fff;border:3px solid var(--green-light);border-radius:16px;
+  padding:13px 18px;font-size:1.1rem;cursor:pointer;box-shadow:var(--shadow);font-weight:bold;
+}
+.opt-icon{font-size:1.4rem;margin-left:6px;}
+.case-counter{font-weight:bold;color:var(--green-dark);font-size:1.15rem;}
+.interaction-hint{font-weight:bold;color:#33691e;}
+.gardener-visit{margin-top:8px;}
+
+/* ======= المرحلة 3 ======= */
+.forest-scene{position:relative;margin:12px auto;min-height:110px;display:flex;align-items:center;justify-content:center;}
+.situation-icon{font-size:4.6rem;}
+.shield-effect{position:absolute;top:-16px;font-size:2.8rem;animation:popIn .9s ease;}
+@keyframes popIn{0%{transform:scale(0);opacity:0;}50%{transform:scale(1.3);opacity:1;}100%{transform:scale(1);opacity:0;}}
+.correct-text{color:var(--green-dark);}
+.wrong-text{color:#c62828;}
+
+/* ======= صناديق النجاح ======= */
+.success-box{background:rgba(255,255,255,.93);border-radius:20px;padding:26px;box-shadow:var(--shadow);max-width:520px;margin:26px auto;}
+
+/* ======= شاشة الفوز ======= */
+.win-forest{display:flex;justify-content:center;gap:6px;flex-wrap:wrap;margin:12px 0;}
+.win-summary{background:rgba(255,255,255,.88);border-radius:16px;padding:18px;max-width:500px;margin:12px auto;text-align:right;}
+.win-summary ul{padding-right:20px;line-height:1.9;}
+
+/* ======= عناصر الأحاسيس المشتركة ======= */
+.feedback-text{font-size:1.15rem;font-weight:bold;min-height:1.4em;margin:8px 0;}
+.feedback-good{color:var(--green-dark);}
+.feedback-bad{color:#c62828;}
+
+/* ======= مؤثرات احتفالية ======= */
+.celebration-layer{position:fixed;inset:0;pointer-events:none;z-index:9999;overflow:hidden;}
+.flying-star{position:absolute;top:100vh;font-size:2rem;animation:flyUp 2.5s ease-out forwards;}
+@keyframes flyUp{0%{transform:translateY(0) rotate(0deg);opacity:1;}100%{transform:translateY(-110vh) rotate(360deg);opacity:0;}}
+.flying-butterfly{position:absolute;top:60vh;font-size:1.8rem;animation:flutter 3s ease-in-out forwards;}
+@keyframes flutter{0%{transform:translate(0,0);opacity:1;}50%{transform:translate(-30px,-120px);}100%{transform:translate(30px,-280px);opacity:0;}}
+.water-drop{position:absolute;font-size:1.4rem;animation:dropFall 1.3s ease-in forwards;top:30%;}
+@keyframes dropFall{0%{transform:translateY(-30px);opacity:1;}100%{transform:translateY(50px);opacity:0;}}
+
+@media (max-width:600px){
+  :root{font-size:16px;}
+  .tools-grid{grid-template-columns:repeat(2,1fr);}
+}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <div id="topbar">
+    <button id="homeBtn" class="icon-btn" title="الرئيسية" onclick="showScreen('screen-home')">🏠</button>
+    <div id="starsDisplay">⭐ <span id="starCount">0</span>/8</div>
+    <button id="soundBtn" class="icon-btn" title="تشغيل/كتم الصوت">🔊</button>
+  </div>
+
+  <!-- ===================== الشاشة الرئيسية ===================== -->
+  <section id="screen-home" class="screen active garden-bg">
+    <div class="sun"></div><div class="cloud cloud1"></div><div class="cloud cloud2"></div>
+    <h1 class="title">مغامرات أصدقاء الشجرة 🌳</h1>
+    <p class="slogan">ازرعها، اعتنِ بها، واحمِها! 💚</p>
+    <div class="home-scene">
+      <div class="home-tree"></div>
+      <div class="home-kid"></div>
+    </div>
+    <div class="home-buttons">
+      <button class="big-btn primary" onclick="showScreen('screen-map')">🌱 ابدأ المغامرة</button>
+      <button class="big-btn" onclick="showScreen('screen-howto')">❓ كيف ألعب؟</button>
+      <button class="big-btn" id="btnReset">🔄 إعادة اللعب</button>
+    </div>
+    <div class="stars-home">⭐ <span id="homeStarCount">0</span> / 8 نجوم</div>
+  </section>
+
+  <!-- ===================== كيف ألعب ===================== -->
+  <section id="screen-howto" class="screen garden-bg">
+    <div class="howto-box">
+      <h2>❓ كيف ألعب؟</h2>
+      <ul class="howto-list">
+        <li>🌱 <b>المرحلة الأولى:</b> تعلّم كيف تزرع شجرة خطوة بخطوة.</li>
+        <li>🩺 <b>المرحلة الثانية:</b> ساعد الأشجار المريضة لتستعيد صحتها.</li>
+        <li>🛡️ <b>المرحلة الثالثة:</b> ميّز بين السلوكيات الصحيحة والخاطئة تجاه الأشجار.</li>
+        <li>⭐ اجمع النجوم من كل مرحلة لتحصل على أكبر عدد من النجوم الثمانية!</li>
+        <li>👆 اضغط واسحب العناصر بإصبعك أو بالماوس للتفاعل مع اللعبة.</li>
+      </ul>
+      <button class="big-btn primary" onclick="showScreen('screen-home')">فهمت! ابدأ اللعب 🎮</button>
+    </div>
+  </section>
+
+  <!-- ===================== الخريطة ===================== -->
+  <section id="screen-map" class="screen garden-bg">
+    <h2>🗺️ اختر مغامرتك</h2>
+    <div class="map-path">
+      <button class="stage-node" onclick="showScreen('screen-stage1')">
+        <div class="node-icon">🌱</div>
+        <div class="node-title">ازرع شجرتك</div>
+        <div id="node1-stars" class="node-stars">☆☆</div>
+      </button>
+      <button class="stage-node" onclick="showScreen('screen-stage2')">
+        <div class="node-icon">🩺</div>
+        <div class="node-title">طبيب الأشجار</div>
+        <div id="node2-stars" class="node-stars">☆☆☆</div>
+      </button>
+      <button class="stage-node" onclick="showScreen('screen-stage3')">
+        <div class="node-icon">🛡️</div>
+        <div class="node-title">حامي الغابة</div>
+        <div id="node3-stars" class="node-stars">☆☆☆</div>
+      </button>
+    </div>
+    <button id="map-win-btn" class="big-btn primary" style="display:none" onclick="showScreen('screen-win')">🏆 اذهب لحفل النجاح!</button>
+  </section>
+
+  <!-- ===================== المرحلة 1 ===================== -->
+  <section id="screen-stage1" class="screen garden-bg">
+    <div class="stage-header">
+      <button class="back-btn" onclick="showScreen('screen-map')">⬅ العودة للخريطة</button>
+      <h2>🌱 المرحلة الأولى: ازرع شجرتك</h2>
+    </div>
+
+    <div id="task1" class="stage1-sub">
+      <h3>المهمة 1: اختر أدوات الزراعة المناسبة</h3>
+      <p class="instruction">اضغط على الأدوات التي نحتاجها لزراعة شجرة 🌳</p>
+      <div id="task1-grid" class="tools-grid"></div>
+      <p id="task1-feedback" class="feedback-text"></p>
+      <p>تم اختيار: <span id="task1-progress">0/3</span></p>
+      <button id="task1-next" class="big-btn primary" style="display:none">التالي ⬅</button>
+    </div>
+
+    <div id="task2" class="stage1-sub" style="display:none">
+      <h3>المهمة 2: رتب خطوات الزراعة</h3>
+      <p class="instruction">اسحب كل بطاقة إلى الفتحة الصحيحة بالترتيب 🔢</p>
+      <div id="task2-source" class="cards-source"></div>
+      <div id="task2-slots" class="slots-row"></div>
+      <p id="task2-feedback" class="feedback-text"></p>
+      <div class="btn-row">
+        <button class="big-btn" onclick="showHintTask2()">💡 تلميح</button>
+        <button id="task2-check" class="big-btn primary" style="display:none" onclick="verifyTask2()">✔ تحقق من الترتيب</button>
+      </div>
+      <button id="task2-next" class="big-btn primary" style="display:none">التالي ⬅</button>
+    </div>
+
+    <div id="task3" class="stage1-sub" style="display:none">
+      <h3>المهمة 3: ازرع شجرتك بنفسك!</h3>
+      <p id="task3-instruction" class="instruction"></p>
+      <p id="task3-instruction-feedback" class="feedback-text"></p>
+      <div id="task3-ground" class="ground-area"></div>
+      <div id="task3-tools" class="tools-row"></div>
+      <div id="task3-success" style="display:none" class="success-box">
+        <h3>🎉 أحسنت! لقد زرعت شجرتك الأولى! 🎉</h3>
+        <button class="big-btn primary" onclick="showScreen('screen-map')">العودة للخريطة 🗺️</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== المرحلة 2 ===================== -->
+  <section id="screen-stage2" class="screen garden-bg">
+    <div class="stage-header">
+      <button class="back-btn" onclick="showScreen('screen-map')">⬅ العودة للخريطة</button>
+      <h2>🩺 المرحلة الثانية: طبيب الأشجار الصغير</h2>
+    </div>
+
+    <div id="stage2-main">
+      <p id="stage2-case-num" class="case-counter"></p>
+      <div id="stage2-tree-container" class="tree-display"></div>
+      <h3 id="stage2-question"></h3>
+      <div id="stage2-options" class="options-row"></div>
+      <div id="stage2-interaction" style="display:none"></div>
+      <p id="stage2-feedback" class="feedback-text"></p>
+      <button id="stage2-next" class="big-btn primary" style="display:none" onclick="nextStage2Case()">التالي ⬅</button>
+    </div>
+
+    <div id="stage2-finish" class="success-box" style="display:none">
+      <h3>🎉 أصبحت "طبيب الأشجار الصغير"! 🎉</h3>
+      <p>عالجت جميع الأشجار المريضة بنجاح وأصبحت الحديقة أكثر صحة وجمالًا 🌳💚</p>
+      <button class="big-btn primary" onclick="showScreen('screen-map')">العودة للخريطة 🗺️</button>
+    </div>
+  </section>
+
+  <!-- ===================== المرحلة 3 ===================== -->
+  <section id="screen-stage3" class="screen garden-bg">
+    <div class="stage-header">
+      <button class="back-btn" onclick="showScreen('screen-map')">⬅ العودة للخريطة</button>
+      <h2>🛡️ المرحلة الثالثة: حامي الغابة</h2>
+    </div>
+
+    <div id="stage3-main">
+      <p id="stage3-counter" class="case-counter"></p>
+      <div class="forest-scene">
+        <div id="stage3-icon" class="situation-icon"></div>
+        <div id="stage3-shield-effect" class="shield-effect" style="display:none">🛡️✨</div>
+      </div>
+      <h3 id="stage3-text"></h3>
+      <div class="btn-row">
+        <button id="stage3-goodbtn" class="big-btn choice-good" onclick="onStage3Choice('good')">✅ سلوك صحيح</button>
+        <button id="stage3-badbtn" class="big-btn choice-bad" onclick="onStage3Choice('bad')">❌ سلوك خاطئ</button>
+      </div>
+      <p id="stage3-feedback" class="feedback-text"></p>
+      <button id="stage3-next" class="big-btn primary" style="display:none" onclick="nextStage3Situation()">التالي ⬅</button>
+    </div>
+
+    <div id="stage3-finish" class="success-box" style="display:none">
+      <h3>🏆 أنت بطل حماية الأشجار! 🏆</h3>
+      <p>تعلمت كيف تحمي الأشجار والغابة من الأذى 🌳🛡️</p>
+      <button class="big-btn primary" onclick="showScreen('screen-map')">العودة للخريطة 🗺️</button>
+    </div>
+  </section>
+
+  <!-- ===================== شاشة الفوز ===================== -->
+  <section id="screen-win" class="screen garden-bg">
+    <div class="win-scene">
+      <h1>🎉 مبروك! أصبحت صديقًا حقيقيًا للشجرة 🎉</h1>
+      <div id="win-forest" class="win-forest"></div>
+      <p class="win-stars">⭐ مجموع نجومك: <span id="winStarsCount">0</span> / 8</p>
+      <div class="win-summary">
+        <h3>ماذا تعلمت؟</h3>
+        <ul>
+          <li>🌱 كيف تزرع شجرة بخطوات صحيحة</li>
+          <li>💧 كيف تسقي الأشجار وتعتني بها</li>
+          <li>🩺 كيف تعالج مشاكل الأشجار</li>
+          <li>🛡️ كيف تحمي الأشجار والبيئة من حولك</li>
+        </ul>
+      </div>
+      <div class="btn-row">
+        <button class="big-btn primary" id="winPlayAgainBtn">🔄 العب مرة أخرى</button>
+        <button class="big-btn" onclick="showScreen('screen-home')">🏠 القائمة الرئيسية</button>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<script>
+/* ============================================================
+   الحالة العامة للعبة
+============================================================ */
+const gameState = {
+  stars: 0,
+  maxStars: 8,
+  stage1Complete:false,
+  stage2Complete:false,
+  stage3Complete:false,
+  soundOn:true,
+  musicOn:true
+};
+
+function saveState(){
+  try{ sessionStorage.setItem('treeGameState', JSON.stringify(gameState)); }catch(e){}
+}
+function loadState(){
+  try{
+    const s = sessionStorage.getItem('treeGameState');
+    if(s) Object.assign(gameState, JSON.parse(s));
+  }catch(e){}
+}
+function resetGame(){
+  gameState.stars=0;
+  gameState.stage1Complete=false;
+  gameState.stage2Complete=false;
+  gameState.stage3Complete=false;
+  saveState();
+  updateStarsDisplay();
+  updateMapProgress();
+  showScreen('screen-home');
+}
+function addStars(n){
+  gameState.stars = Math.min(gameState.maxStars, gameState.stars+n);
+  updateStarsDisplay();
+  saveState();
+}
+function completeStage(n){
+  gameState['stage'+n+'Complete']=true;
+  saveState();
+  updateMapProgress();
+}
+function updateStarsDisplay(){
+  document.getElementById('starCount').textContent = gameState.stars;
+  const h = document.getElementById('homeStarCount');
+  if(h) h.textContent = gameState.stars;
+}
+function updateMapProgress(){
+  const n1=document.getElementById('node1-stars');
+  const n2=document.getElementById('node2-stars');
+  const n3=document.getElementById('node3-stars');
+  if(n1) n1.textContent = gameState.stage1Complete?'⭐⭐':'☆☆';
+  if(n2) n2.textContent = gameState.stage2Complete?'⭐⭐⭐':'☆☆☆';
+  if(n3) n3.textContent = gameState.stage3Complete?'⭐⭐⭐':'☆☆☆';
+  const winBtn=document.getElementById('map-win-btn');
+  if(winBtn){
+    winBtn.style.display = (gameState.stage1Complete && gameState.stage2Complete && gameState.stage3Complete)?'inline-block':'none';
+  }
+}
+
+/* ============================================================
+   أدوات مساعدة عامة
+============================================================ */
+function shuffle(arr){
+  for(let i=arr.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]]=[arr[j],arr[i]];
+  }
+  return arr;
+}
+function showFeedback(elId,msg,isGood){
+  const el=document.getElementById(elId);
+  el.textContent=msg;
+  el.className='feedback-text '+(isGood?'feedback-good':'feedback-bad');
+}
+
+/* ============================================================
+   الصوت (Web Audio API - بدون ملفات خارجية)
+============================================================ */
+let audioCtx;
+function getAudioCtx(){
+  if(!audioCtx) audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+  return audioCtx;
+}
+function playTone(freq,duration=0.2,type='sine',delay=0){
+  if(!gameState.soundOn) return;
+  try{
+    const ctx=getAudioCtx();
+    const osc=ctx.createOscillator();
+    const gain=ctx.createGain();
+    osc.type=type; osc.frequency.value=freq;
+    gain.gain.setValueAtTime(0.18, ctx.currentTime+delay);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime+delay+duration);
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.start(ctx.currentTime+delay);
+    osc.stop(ctx.currentTime+delay+duration);
+  }catch(e){}
+}
+function playSuccess(){ playTone(523.25,0.15); playTone(659.25,0.15,'sine',0.12); playTone(783.99,0.2,'sine',0.24); }
+function playError(){ playTone(200,0.3,'sawtooth'); }
+function playStar(){ playTone(880,0.1); playTone(1046.5,0.15,'sine',0.1); }
+
+let musicInterval, melodyIndex=0;
+const melody=[392,440,494,440,392,349,392,null];
+function startMusic(){
+  if(musicInterval) return;
+  musicInterval=setInterval(()=>{
+    if(gameState.musicOn){
+      const note=melody[melodyIndex%melody.length];
+      if(note) playTone(note,0.4,'triangle');
+    }
+    melodyIndex++;
+  },550);
+}
+document.addEventListener('pointerdown', function initAudioOnce(){
+  try{ const ctx=getAudioCtx(); if(ctx.state==='suspended') ctx.resume(); }catch(e){}
+  document.removeEventListener('pointerdown', initAudioOnce);
+},{once:true});
+
+/* ============================================================
+   مؤثرات احتفالية بصرية
+============================================================ */
+function celebrateStars(count){
+  const container=document.createElement('div');
+  container.className='celebration-layer';
+  document.body.appendChild(container);
+  for(let i=0;i<Math.min(count,25);i++){
+    const star=document.createElement('div');
+    star.className='flying-star';
+    star.textContent = Math.random()>0.5?'⭐':'🌟';
+    star.style.left=Math.random()*100+'vw';
+    star.style.animationDelay=(Math.random()*0.5)+'s';
+    container.appendChild(star);
+  }
+  for(let i=0;i<6;i++){
+    const b=document.createElement('div');
+    b.className='flying-butterfly';
+    b.textContent='🦋';
+    b.style.left=Math.random()*100+'vw';
+    b.style.animationDelay=(Math.random()*1)+'s';
+    container.appendChild(b);
+  }
+  playStar();
+  setTimeout(()=>container.remove(),3000);
+}
+function animateWaterDrops(containerId){
+  const container=document.getElementById(containerId);
+  if(!container) return;
+  container.style.position = container.style.position || 'relative';
+  for(let i=0;i<5;i++){
+    const drop=document.createElement('div');
+    drop.className='water-drop';
+    drop.textContent='💧';
+    drop.style.left=(35+Math.random()*30)+'%';
+    drop.style.animationDelay=(i*0.12)+'s';
+    container.appendChild(drop);
+    setTimeout(()=>drop.remove(),1500);
+  }
+}
+
+/* ============================================================
+   رسومات SVG مولّدة بالكود (بدون صور خارجية)
+============================================================ */
+function makeTreeSVG(opts={}){
+  const {
+    leafColor='#4caf50', leafColor2='#66bb6a', face='happy',
+    weeds=false, deadBranch=false, size=180, trunkColor='#8d6e63'
+  }=opts;
+
+  let eyes,mouth;
+  if(face==='happy'){
+    eyes=`<circle cx="78" cy="92" r="5" fill="#333"/><circle cx="118" cy="92" r="5" fill="#333"/>`;
+    mouth=`<path d="M75 108 Q98 125 121 108" stroke="#333" stroke-width="4" fill="none" stroke-linecap="round"/>`;
+  } else if(face==='sad'){
+    eyes=`<path d="M73 90 L83 96 M83 90 L73 96" stroke="#333" stroke-width="3" stroke-linecap="round"/><path d="M113 90 L123 96 M123 90 L113 96" stroke="#333" stroke-width="3" stroke-linecap="round"/>`;
+    mouth=`<path d="M78 118 Q98 105 118 118" stroke="#333" stroke-width="4" fill="none" stroke-linecap="round"/>`;
+  } else {
+    eyes=`<circle cx="78" cy="92" r="5" fill="#333"/><circle cx="118" cy="92" r="5" fill="#333"/>`;
+    mouth=`<path d="M80 112 L116 112" stroke="#333" stroke-width="4" stroke-linecap="round"/>`;
+  }
+
+  const deadBranchEl = deadBranch ? `<line x1="108" y1="135" x2="156" y2="98" stroke="#6d4c41" stroke-width="7" stroke-linecap="round"/><line x1="130" y1="112" x2="146" y2="96" stroke="#6d4c41" stroke-width="4" stroke-linecap="round"/>` : '';
+  const weedsEl = weeds ? `<g>
+      <path d="M55 208 Q60 188 65 208" stroke="#558b2f" stroke-width="4" fill="none" stroke-linecap="round"/>
+      <path d="M70 210 Q75 185 80 210" stroke="#558b2f" stroke-width="4" fill="none" stroke-linecap="round"/>
+      <path d="M120 210 Q125 188 130 210" stroke="#558b2f" stroke-width="4" fill="none" stroke-linecap="round"/>
+      <path d="M135 208 Q140 190 145 208" stroke="#558b2f" stroke-width="4" fill="none" stroke-linecap="round"/>
+    </g>` : '';
+
+  return `<svg viewBox="0 0 200 220" width="${size}" class="tree-svg">
+    <ellipse cx="100" cy="208" rx="55" ry="10" fill="rgba(0,0,0,0.15)"/>
+    <rect x="88" y="125" width="24" height="85" rx="8" fill="${trunkColor}"/>
+    <circle cx="65" cy="120" r="40" fill="${leafColor2}"/>
+    <circle cx="135" cy="120" r="40" fill="${leafColor2}"/>
+    <circle cx="100" cy="95" r="58" fill="${leafColor}"/>
+    ${deadBranchEl}
+    ${eyes}
+    ${mouth}
+    ${weedsEl}
+  </svg>`;
+}
+
+function makeSaplingSVG(size=80){
+  return `<svg viewBox="0 0 80 100" width="${size}">
+    <ellipse cx="40" cy="92" rx="25" ry="6" fill="rgba(0,0,0,.15)"/>
+    <rect x="36" y="50" width="8" height="40" fill="#8d6e63" rx="3"/>
+    <circle cx="25" cy="55" r="14" fill="#81c784"/>
+    <circle cx="55" cy="55" r="14" fill="#81c784"/>
+    <circle cx="40" cy="40" r="22" fill="#66bb6a"/>
+    <circle cx="33" cy="36" r="3" fill="#2e7d32"/>
+    <circle cx="47" cy="36" r="3" fill="#2e7d32"/>
+    <path d="M33 46 Q40 51 47 46" stroke="#2e7d32" stroke-width="2" fill="none" stroke-linecap="round"/>
+  </svg>`;
+}
+
+function makeKidSVG(size=120){
+  return `<svg viewBox="0 0 100 160" width="${size}">
+    <ellipse cx="50" cy="30" rx="28" ry="8" fill="#ffca28"/>
+    <path d="M28 30 Q50 2 72 30 Z" fill="#ffb300"/>
+    <circle cx="50" cy="40" r="20" fill="#ffccbc"/>
+    <circle cx="43" cy="38" r="3" fill="#333"/>
+    <circle cx="57" cy="38" r="3" fill="#333"/>
+    <path d="M43 48 Q50 54 57 48" stroke="#333" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <rect x="30" y="60" width="40" height="55" rx="10" fill="#43a047"/>
+    <rect x="12" y="65" width="18" height="12" rx="6" fill="#ffccbc"/>
+    <rect x="70" y="65" width="18" height="12" rx="6" fill="#ffccbc"/>
+    <rect x="35" y="115" width="12" height="35" rx="5" fill="#5d4037"/>
+    <rect x="53" y="115" width="12" height="35" rx="5" fill="#5d4037"/>
+  </svg>`;
+}
+
+function wateringCanSVG(size=60){
+  return `<svg viewBox="0 0 100 80" width="${size}">
+    <path d="M20 40 L70 40 Q85 40 85 25 L85 20" stroke="#1976d2" stroke-width="8" fill="none" stroke-linecap="round"/>
+    <rect x="15" y="35" width="50" height="35" rx="8" fill="#29b6f6"/>
+    <rect x="25" y="25" width="15" height="12" rx="4" fill="#29b6f6"/>
+    <circle cx="88" cy="18" r="6" fill="#1976d2"/>
+  </svg>`;
+}
+function shovelSVG(size=60){
+  return `<svg viewBox="0 0 60 100" width="${size}">
+    <rect x="25" y="10" width="8" height="55" fill="#8d6e63" rx="3"/>
+    <path d="M15 60 L45 60 L40 90 Q30 98 20 90 Z" fill="#9e9e9e"/>
+  </svg>`;
+}
+function soilSVG(size=60){
+  return `<svg viewBox="0 0 80 50" width="${size}">
+    <ellipse cx="40" cy="30" rx="38" ry="18" fill="#6d4c41"/>
+    <ellipse cx="40" cy="25" rx="36" ry="15" fill="#8d6e63"/>
+  </svg>`;
+}
+
+function toolVisual(name){
+  const map={
+    sapling: makeSaplingSVG(70),
+    shovel: shovelSVG(70),
+    water: wateringCanSVG(70),
+    soil: soilSVG(70),
+    ball: '<div class="emoji-icon">⚽</div>',
+    toy: '<div class="emoji-icon">🧸</div>',
+    candy: '<div class="emoji-icon">🍬</div>'
+  };
+  return map[name];
+}
+
+/* ============================================================
+   التنقل بين الشاشات
+============================================================ */
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+
+  if(id==='screen-stage1') initStage1();
+  else if(id==='screen-stage2') renderStage2();
+  else if(id==='screen-stage3') renderStage3();
+  else if(id==='screen-map') updateMapProgress();
+  else if(id==='screen-win') renderWinScreen();
+
+  startMusic();
+  const scr=document.getElementById(id);
+  scr.scrollTop=0;
+}
+
+/* ============================================================
+   نظام السحب والإفلات العام (Pointer Events)
+============================================================ */
+function makeDraggableToTarget(el, targetSelector, onDropSuccess, onDropFail){
+  let dragging=false, offsetX=0, offsetY=0;
+  el.addEventListener('pointerdown', e=>{
+    e.preventDefault();
+    dragging=true;
+    el.setPointerCapture(e.pointerId);
+    const rect=el.getBoundingClientRect();
+    offsetX=e.clientX-rect.left; offsetY=e.clientY-rect.top;
+    el.style.position='fixed';
+    el.style.left=rect.left+'px'; el.style.top=rect.top+'px';
+    el.style.zIndex=3000;
+    el.classList.add('dragging-tool');
+  });
+  el.addEventListener('pointermove', e=>{
+    if(!dragging) return;
+    el.style.left=(e.clientX-offsetX)+'px';
+    el.style.top=(e.clientY-offsetY)+'px';
+  });
+  el.addEventListener('pointerup', e=>{
+    if(!dragging) return;
+    dragging=false;
+    el.classList.remove('dragging-tool');
+    el.style.pointerEvents='none';
+    const dropEl=document.elementFromPoint(e.clientX,e.clientY);
+    el.style.pointerEvents='';
+    const target = dropEl ? dropEl.closest(targetSelector) : null;
+    if(target){ onDropSuccess(target); }
+    else { resetToolPosition(el); if(onDropFail) onDropFail(); }
+  });
+}
+function resetToolPosition(el){
+  el.style.position=''; el.style.left=''; el.style.top=''; el.style.zIndex='';
+}
+
+/* ============================================================
+   المرحلة الأولى - المهمة 1: اختر أدوات الزراعة
+============================================================ */
+const task1Items=[
+  {id:'sapling',correct:true,label:'شتلة صغيرة',reason:'الشتلة هي النبات الذي سنزرعه! 🌱'},
+  {id:'shovel',correct:true,label:'مجرفة',reason:'نستخدم المجرفة لحفر التربة. 🛠️'},
+  {id:'water',correct:true,label:'إبريق ماء',reason:'الماء ضروري لنمو الشجرة. 💧'},
+  {id:'ball',correct:false,label:'كرة',reason:'الكرة ممتعة للعب لكنها لا تفيد في الزراعة!'},
+  {id:'toy',correct:false,label:'لعبة',reason:'اللعبة جميلة لكنها ليست أداة زراعة.'},
+  {id:'candy',correct:false,label:'حلوى',reason:'الحلوى لذيذة لكنها لا تساعد الشجرة على النمو.'}
+];
+let task1CorrectCount=0;
+
+function initStage1(){
+  showStage1Sub('task1');
+  renderTask1();
+}
+function showStage1Sub(subId){
+  document.querySelectorAll('.stage1-sub').forEach(s=>s.style.display='none');
+  document.getElementById(subId).style.display='block';
+}
+function renderTask1(){
+  const grid=document.getElementById('task1-grid');
+  grid.innerHTML='';
+  task1CorrectCount=0;
+  const items=shuffle([...task1Items]);
+  items.forEach(item=>{
+    const card=document.createElement('div');
+    card.className='tool-card';
+    card.innerHTML=`${toolVisual(item.id)}<div class="tool-label">${item.label}</div>`;
+    card.addEventListener('click', ()=>onTask1Click(item,card));
+    grid.appendChild(card);
+  });
+  document.getElementById('task1-feedback').textContent='';
+  document.getElementById('task1-next').style.display='none';
+  document.getElementById('task1-progress').textContent='0/3';
+}
+function onTask1Click(item,card){
+  if(card.classList.contains('correct-selected')) return;
+  if(item.correct){
+    card.classList.add('correct-selected');
+    card.innerHTML+='<div class="badge-check">✔</div>';
+    task1CorrectCount++;
+    playSuccess();
+    showFeedback('task1-feedback', item.reason, true);
+    document.getElementById('task1-progress').textContent=task1CorrectCount+'/3';
+    if(task1CorrectCount===3){
+      document.getElementById('task1-next').style.display='inline-block';
+      showFeedback('task1-feedback','رائع! اخترت كل أدوات الزراعة الصحيحة 🎉', true);
+    }
+  } else {
+    card.classList.add('shake');
+    playError();
+    showFeedback('task1-feedback', item.reason, false);
+    setTimeout(()=>card.classList.remove('shake'),450);
+  }
+}
+
+/* ============================================================
+   المرحلة الأولى - المهمة 2: رتب خطوات الزراعة
+============================================================ */
+const stepsData=[
+  {id:1,text:'اختيار مكان مناسب للزراعة',order:1},
+  {id:2,text:'حفر حفرة مناسبة في التربة',order:2},
+  {id:3,text:'وضع الشتلة برفق في الحفرة',order:3},
+  {id:4,text:'تغطية الجذور بالتربة وتثبيت الشتلة',order:4},
+  {id:5,text:'سقي الشتلة بالماء',order:5}
+];
+let task2Placement={};
+
+function renderTask2(){
+  const sourceArea=document.getElementById('task2-source');
+  const slotsArea=document.getElementById('task2-slots');
+  sourceArea.innerHTML=''; slotsArea.innerHTML='';
+  task2Placement={};
+
+  const shuffled=shuffle([...stepsData]);
+  shuffled.forEach(step=>sourceArea.appendChild(createStepCard(step)));
+
+  for(let i=1;i<=5;i++){
+    const slot=document.createElement('div');
+    slot.className='step-slot';
+    slot.dataset.slot=i;
+    slot.innerHTML=`<span class="slot-number">${i}</span>`;
+    slotsArea.appendChild(slot);
+  }
+  document.getElementById('task2-feedback').textContent='';
+  document.getElementById('task2-next').style.display='none';
+  document.getElementById('task2-check').style.display='none';
+  document.querySelectorAll('.step-slot').forEach(s=>s.classList.remove('slot-correct'));
+}
+function createStepCard(step){
+  const card=document.createElement('div');
+  card.className='step-card';
+  card.dataset.stepId=step.id;
+  card.textContent=step.text;
+  makeDraggableStep(card);
+  return card;
+}
+function makeDraggableStep(card){
+  let dragging=false, offsetX=0, offsetY=0, origParent, origNext;
+  card.addEventListener('pointerdown', e=>{
+    e.preventDefault();
+    dragging=true;
+    card.setPointerCapture(e.pointerId);
+    const rect=card.getBoundingClientRect();
+    offsetX=e.clientX-rect.left; offsetY=e.clientY-rect.top;
+    origParent=card.parentNode; origNext=card.nextSibling;
+    document.body.appendChild(card);
+    card.style.position='fixed';
+    card.style.width=rect.width+'px';
+    card.style.left=rect.left+'px'; card.style.top=rect.top+'px';
+    card.style.zIndex=2000;
+    card.classList.add('dragging-card');
+  });
+  card.addEventListener('pointermove', e=>{
+    if(!dragging) return;
+    card.style.left=(e.clientX-offsetX)+'px';
+    card.style.top=(e.clientY-offsetY)+'px';
+  });
+  card.addEventListener('pointerup', e=>{
+    if(!dragging) return;
+    dragging=false;
+    card.classList.remove('dragging-card');
+    card.style.pointerEvents='none';
+    const dropEl=document.elementFromPoint(e.clientX,e.clientY);
+    card.style.pointerEvents='';
+    const slot = dropEl ? dropEl.closest('.step-slot') : null;
+    if(slot){
+      placeCardInSlot(card, slot);
+    } else {
+      card.style.position=''; card.style.left=''; card.style.top=''; card.style.width=''; card.style.zIndex='';
+      origParent.insertBefore(card, origNext);
+      removeFromPlacement(card.dataset.stepId);
+      checkTask2Complete();
+    }
+  });
+}
+function placeCardInSlot(card, slot){
+  const existingCard=slot.querySelector('.step-card');
+  card.style.position=''; card.style.left=''; card.style.top=''; card.style.width=''; card.style.zIndex='';
+  removeFromPlacement(card.dataset.stepId);
+  if(existingCard && existingCard!==card){
+    document.getElementById('task2-source').appendChild(existingCard);
+    removeFromPlacement(existingCard.dataset.stepId);
+  }
+  slot.appendChild(card);
+  task2Placement[slot.dataset.slot]=card.dataset.stepId;
+  checkTask2Complete();
+}
+function removeFromPlacement(stepId){
+  for(const key in task2Placement){
+    if(task2Placement[key]==stepId) delete task2Placement[key];
+  }
+}
+function checkTask2Complete(){
+  const filled=Object.keys(task2Placement).length;
+  document.getElementById('task2-check').style.display = filled===5?'inline-block':'none';
+}
+function verifyTask2(){
+  let allCorrect=true;
+  for(let i=1;i<=5;i++){
+    const stepId=task2Placement[i];
+    const step=stepsData.find(s=>s.id==stepId);
+    if(!step || step.order!==i) allCorrect=false;
+  }
+  if(allCorrect){
+    playSuccess();
+    showFeedback('task2-feedback','ممتاز! رتبت خطوات الزراعة بشكل صحيح 🎉', true);
+    document.getElementById('task2-next').style.display='inline-block';
+    document.querySelectorAll('.step-slot').forEach(s=>s.classList.add('slot-correct'));
+  } else {
+    playError();
+    showFeedback('task2-feedback','بعض الخطوات ليست في ترتيبها الصحيح، حاول مرة أخرى! 💪', false);
+  }
+}
+function showHintTask2(){
+  for(let i=1;i<=5;i++){
+    const stepId=task2Placement[i];
+    const step=stepsData.find(s=>s.id==stepId);
+    if(!step || step.order!==i){
+      const correctStep=stepsData.find(s=>s.order===i);
+      showFeedback('task2-feedback', `تلميح: الخطوة رقم ${i} هي "${correctStep.text}"`, true);
+      return;
+    }
+  }
+  showFeedback('task2-feedback','كل الخطوات تبدو صحيحة! اضغط تحقق ✔', true);
+}
+
+/* ============================================================
+   المرحلة الأولى - المهمة 3: ازرع شجرتك بنفسك
+============================================================ */
+let task3Step=0;
+const task3Instructions=[
+  'ابدأ بالضغط على المجرفة، ثم اضغط على الأرض لحفر حفرة 🕳️',
+  'الآن اسحب الشتلة وضعها داخل الحفرة 🌱',
+  'اسحب التربة وغطِّ الجذور 🟤',
+  'اسحب إبريق الماء واسقِ الشتلة 💧'
+];
+function renderTask3(){
+  task3Step=0;
+  document.getElementById('task3-instruction').textContent=task3Instructions[0];
+  document.getElementById('task3-instruction-feedback').textContent='';
+  document.getElementById('task3-ground').innerHTML=`<div class="ground-flat"></div>`;
+  document.getElementById('task3-success').style.display='none';
+  renderTask3Tools();
+  bindTask3Interactions();
+}
+function renderTask3Tools(){
+  const area=document.getElementById('task3-tools');
+  area.innerHTML=`
+    <div id="tool-shovel" class="task3-tool">${shovelSVG(65)}<div>مجرفة</div></div>
+    <div id="tool-sapling" class="task3-tool">${makeSaplingSVG(65)}<div>شتلة</div></div>
+    <div id="tool-soil" class="task3-tool">${soilSVG(65)}<div>تربة</div></div>
+    <div id="tool-water" class="task3-tool">${wateringCanSVG(65)}<div>ماء</div></div>
+  `;
+}
+function bindTask3Interactions(){
+  const shovelEl=document.getElementById('tool-shovel');
+  const saplingEl=document.getElementById('tool-sapling');
+  const soilEl=document.getElementById('tool-soil');
+  const waterEl=document.getElementById('tool-water');
+  const groundArea=document.getElementById('task3-ground');
+
+  shovelEl.onclick=()=>{
+    if(task3Step!==0) return;
+    shovelEl.classList.add('tool-selected');
+  };
+  groundArea.onclick=()=>{
+    if(task3Step!==0) return;
+    if(!shovelEl.classList.contains('tool-selected')){
+      showFeedback('task3-instruction-feedback','اختر المجرفة أولاً! 🛠️', false);
+      return;
+    }
+    playTone(300,0.1);
+    groundArea.innerHTML=`<div class="ground-hole">🕳️</div>`;
+    shovelEl.classList.remove('tool-selected');
+    shovelEl.classList.add('tool-done');
+    task3Step=1;
+    document.getElementById('task3-instruction-feedback').textContent='';
+    document.getElementById('task3-instruction').textContent=task3Instructions[1];
+  };
+
+  makeDraggableToTarget(saplingEl,'#task3-ground',(target)=>{
+    if(task3Step!==1){ resetToolPosition(saplingEl); return; }
+    saplingEl.style.display='none';
+    target.innerHTML=`<div class="ground-planted">${makeSaplingSVG(60)}</div>`;
+    playSuccess();
+    task3Step=2;
+    document.getElementById('task3-instruction').textContent=task3Instructions[2];
+  }, ()=>{});
+
+  makeDraggableToTarget(soilEl,'#task3-ground',(target)=>{
+    if(task3Step!==2){ resetToolPosition(soilEl); return; }
+    soilEl.style.display='none';
+    playSuccess();
+    task3Step=3;
+    document.getElementById('task3-instruction').textContent=task3Instructions[3];
+  }, ()=>{});
+
+  makeDraggableToTarget(waterEl,'#task3-ground',(target)=>{
+    if(task3Step!==3){ resetToolPosition(waterEl); return; }
+    waterEl.style.display='none';
+    playSuccess();
+    animateWaterDrops('task3-ground');
+    completeTask3(target);
+  }, ()=>{});
+}
+function completeTask3(groundArea){
+  setTimeout(()=>{
+    groundArea.innerHTML=`<div class="ground-final">${makeSaplingSVG(110)}</div>`;
+    document.getElementById('task3-instruction').textContent='أحسنت! لقد زرعت شجرتك الأولى! 🎉';
+    document.getElementById('task3-success').style.display='block';
+    celebrateStars(12);
+    if(!gameState.stage1Complete){ addStars(2); completeStage(1); }
+  }, 400);
+}
+
+/* ============================================================
+   المرحلة الثانية - طبيب الأشجار
+============================================================ */
+const stage2Cases=[
+  {
+    id:'thirsty',
+    question:'ما الذي تحتاج إليه الشجرة؟',
+    options:[
+      {text:'الماء',correct:true,icon:'💧'},
+      {text:'لعبة',correct:false,icon:'🧸'},
+      {text:'حلوى',correct:false,icon:'🍬'}
+    ],
+    treeState:{face:'sad', leafColor:'#c9b458', leafColor2:'#d7c27a'},
+    actionLabel:'اسحب إبريق الماء إلى الشجرة لسقيها 💧'
+  },
+  {
+    id:'weeds',
+    question:'كيف نساعد الشجرة على النمو؟',
+    options:[
+      {text:'إزالة الأعشاب الضارة بعناية',correct:true,icon:'🌿'},
+      {text:'كسر أغصان الشجرة',correct:false,icon:'❌'},
+      {text:'ترك النفايات حولها',correct:false,icon:'🗑️'}
+    ],
+    treeState:{face:'neutral', leafColor:'#4caf50', leafColor2:'#66bb6a', weeds:true},
+    actionLabel:'اضغط على الزر لإزالة الأعشاب الضارة 🌿'
+  },
+  {
+    id:'deadbranch',
+    question:'ما التصرف المناسب؟',
+    options:[
+      {text:'تقليم الغصن الميت بأمان بمساعدة شخص بالغ',correct:true,icon:'✂️'},
+      {text:'كسر جميع الأغصان',correct:false,icon:'❌'},
+      {text:'قطع الشجرة بالكامل',correct:false,icon:'🪓'}
+    ],
+    treeState:{face:'neutral', leafColor:'#4caf50', leafColor2:'#66bb6a', deadBranch:true},
+    actionLabel:'اضغط على الزر لطلب مساعدة البستاني في التقليم ✂️'
+  }
+];
+let stage2Index=0;
+
+function renderStage2(){
+  stage2Index=0;
+  document.getElementById('stage2-main').style.display='block';
+  document.getElementById('stage2-finish').style.display='none';
+  showStage2Case();
+}
+function showStage2Case(){
+  if(stage2Index>=stage2Cases.length){ finishStage2(); return; }
+  const c=stage2Cases[stage2Index];
+  document.getElementById('stage2-tree-container').innerHTML=makeTreeSVG({...c.treeState,size:190});
+  document.getElementById('stage2-question').textContent=c.question;
+  document.getElementById('stage2-case-num').textContent=`الحالة ${stage2Index+1} من ${stage2Cases.length}`;
+
+  const optsArea=document.getElementById('stage2-options');
+  optsArea.innerHTML='';
+  shuffle([...c.options]).forEach(opt=>{
+    const btn=document.createElement('button');
+    btn.className='option-btn';
+    btn.innerHTML=`<span class="opt-icon">${opt.icon}</span> ${opt.text}`;
+    btn.onclick=()=>onStage2OptionClick(opt,c);
+    optsArea.appendChild(btn);
+  });
+  optsArea.style.display='flex';
+  document.getElementById('stage2-interaction').innerHTML='';
+  document.getElementById('stage2-interaction').style.display='none';
+  document.getElementById('stage2-feedback').textContent='';
+  document.getElementById('stage2-next').style.display='none';
+}
+function onStage2OptionClick(opt, caseData){
+  if(opt.correct){
+    playSuccess();
+    showFeedback('stage2-feedback','إجابة صحيحة! والآن ساعد الشجرة 👍', true);
+    document.getElementById('stage2-options').style.display='none';
+    showStage2Interaction(caseData);
+  } else {
+    playError();
+    showFeedback('stage2-feedback','حاول مرة أخرى، فالشجرة تحتاج إلى مساعدتك! 🌳💕', false);
+  }
+}
+function showStage2Interaction(caseData){
+  const area=document.getElementById('stage2-interaction');
+  area.style.display='block';
+  area.innerHTML=`<p class="interaction-hint">${caseData.actionLabel}</p>`;
+
+  if(caseData.id==='thirsty'){
+    area.innerHTML+=`<div id="s2-watering-can" class="task3-tool" style="display:inline-flex;margin-top:8px;">${wateringCanSVG(70)}</div>`;
+    const can=document.getElementById('s2-watering-can');
+    makeDraggableToTarget(can,'#stage2-tree-container',()=>{
+      can.style.display='none';
+      animateWaterDrops('stage2-tree-container');
+      document.getElementById('stage2-tree-container').innerHTML=makeTreeSVG({face:'happy',leafColor:'#4caf50',leafColor2:'#66bb6a',size:190});
+      finishStage2Case();
+    }, ()=>{});
+  } else if(caseData.id==='weeds'){
+    area.innerHTML+=`<br><button class="big-btn" id="s2-remove-weeds-btn">🌿 إزالة الأعشاب الضارة</button>`;
+    document.getElementById('s2-remove-weeds-btn').onclick=()=>{
+      playTone(400,0.15);
+      document.getElementById('stage2-tree-container').innerHTML=makeTreeSVG({face:'happy',leafColor:'#4caf50',leafColor2:'#66bb6a',size:190,weeds:false});
+      finishStage2Case();
+    };
+  } else if(caseData.id==='deadbranch'){
+    area.innerHTML+=`<br><button class="big-btn" id="s2-prune-btn">✂️ طلب مساعدة البستاني للتقليم</button><div id="gardener-visit"></div>`;
+    document.getElementById('s2-prune-btn').onclick=()=>{
+      playTone(400,0.15);
+      document.getElementById('gardener-visit').innerHTML=makeKidSVG(80);
+      document.getElementById('s2-prune-btn').disabled=true;
+      setTimeout(()=>{
+        document.getElementById('stage2-tree-container').innerHTML=makeTreeSVG({face:'happy',leafColor:'#4caf50',leafColor2:'#66bb6a',size:190,deadBranch:false});
+        finishStage2Case();
+      },700);
+    };
+  }
+}
+function finishStage2Case(){
+  celebrateStars(6);
+  showFeedback('stage2-feedback','أحسنت! الشجرة الآن سعيدة وصحية 🌳💚', true);
+  document.getElementById('stage2-interaction').style.display='none';
+  document.getElementById('stage2-next').style.display='inline-block';
+}
+function nextStage2Case(){ stage2Index++; showStage2Case(); }
+function finishStage2(){
+  document.getElementById('stage2-main').style.display='none';
+  document.getElementById('stage2-finish').style.display='flex';
+  if(!gameState.stage2Complete){ addStars(3); completeStage(2); }
+  celebrateStars(14);
+}
+
+/* ============================================================
+   المرحلة الثالثة - حامي الغابة
+============================================================ */
+const stage3Situations=[
+  {text:'طفل يسقي شجرة صغيرة', icon:'💧🌱', correct:'good'},
+  {text:'طفل يكسر غصن شجرة سليمًا', icon:'🤚🌿', correct:'bad', explain:'يجب ألا نكسر أغصان الأشجار، فهي تؤلمها وتضر بنموها.'},
+  {text:'طفل يزرع شتلة جديدة', icon:'🌱🧒', correct:'good'},
+  {text:'طفل يرمي النفايات بجوار جذع الشجرة', icon:'🗑️🌳', correct:'bad', explain:'يجب رمي النفايات في سلة المهملات، فالقمامة تضر بالتربة والشجرة.'},
+  {text:'طفل يحافظ على جذور الشجرة ولا يعبث بها', icon:'🌳👍', correct:'good'},
+  {text:'طفل يكتب على جذع الشجرة ويجرح لحاءها', icon:'✏️🌳', correct:'bad', explain:'الكتابة على جذع الشجرة تجرح لحاءها وتسبب لها الأذى.'},
+  {text:'طفل يجمع النفايات من الحديقة', icon:'🧹🗑️', correct:'good'},
+  {text:'طفل يشعل نارًا قرب الأشجار دون احتياطات', icon:'🔥🌳', correct:'bad', explain:'النار بجانب الأشجار خطيرة جدًا وقد تحرق الغابة بأكملها!'}
+];
+let stage3Index=0;
+
+function renderStage3(){
+  stage3Index=0;
+  document.getElementById('stage3-main').style.display='block';
+  document.getElementById('stage3-finish').style.display='none';
+  showStage3Situation();
+}
+function showStage3Situation(){
+  if(stage3Index>=stage3Situations.length){ finishStage3(); return; }
+  const s=stage3Situations[stage3Index];
+  document.getElementById('stage3-counter').textContent=`الموقف ${stage3Index+1} من ${stage3Situations.length}`;
+  document.getElementById('stage3-icon').textContent=s.icon;
+  document.getElementById('stage3-text').textContent=s.text;
+  document.getElementById('stage3-feedback').textContent='';
+  document.getElementById('stage3-next').style.display='none';
+  document.getElementById('stage3-goodbtn').disabled=false;
+  document.getElementById('stage3-badbtn').disabled=false;
+}
+function onStage3Choice(choice){
+  const s=stage3Situations[stage3Index];
+  if(choice===s.correct){
+    playSuccess();
+    document.getElementById('stage3-feedback').innerHTML='<span class="correct-text">أحسنت! إجابة صحيحة 🛡️</span>';
+    document.getElementById('stage3-goodbtn').disabled=true;
+    document.getElementById('stage3-badbtn').disabled=true;
+    showForestShield();
+    document.getElementById('stage3-next').style.display='inline-block';
+  } else {
+    playError();
+    const explain=s.explain || 'فكر جيدًا، هل هذا التصرف يساعد الشجرة أم يؤذيها؟';
+    document.getElementById('stage3-feedback').innerHTML=`<span class="wrong-text">${explain}</span>`;
+  }
+}
+function showForestShield(){
+  const shield=document.getElementById('stage3-shield-effect');
+  shield.style.display='block';
+  setTimeout(()=>{ shield.style.display='none'; }, 1100);
+}
+function nextStage3Situation(){ stage3Index++; showStage3Situation(); }
+function finishStage3(){
+  document.getElementById('stage3-main').style.display='none';
+  document.getElementById('stage3-finish').style.display='flex';
+  if(!gameState.stage3Complete){ addStars(3); completeStage(3); }
+  celebrateStars(14);
+}
+
+/* ============================================================
+   شاشة الفوز النهائية
+============================================================ */
+function renderWinScreen(){
+  document.getElementById('winStarsCount').textContent=gameState.stars;
+  celebrateStars(20);
+}
+
+/* ============================================================
+   التهيئة عند بدء التشغيل
+============================================================ */
+function initStaticVisuals(){
+  document.querySelector('.home-tree').innerHTML=makeTreeSVG({face:'happy',leafColor:'#4caf50',leafColor2:'#66bb6a',size:170});
+  document.querySelector('.home-kid').innerHTML=makeKidSVG(120);
+  const winForest=document.getElementById('win-forest');
+  let html='';
+  for(let i=0;i<5;i++){
+    html+=`<div>${makeTreeSVG({face:'happy', leafColor: i%2?'#4caf50':'#66bb6a', leafColor2:'#81c784', size:95+Math.random()*35})}</div>`;
+  }
+  winForest.innerHTML=html;
+}
+
+window.addEventListener('DOMContentLoaded', ()=>{
+  loadState();
+  updateStarsDisplay();
+  updateMapProgress();
+  initStaticVisuals();
+  document.getElementById('soundBtn').textContent = gameState.soundOn?'🔊':'🔇';
+
+  document.getElementById('soundBtn').onclick=function(){
+    gameState.soundOn=!gameState.soundOn;
+    gameState.musicOn=gameState.soundOn;
+    this.textContent=gameState.soundOn?'🔊':'🔇';
+    saveState();
+  };
+
+  document.getElementById('btnReset').onclick=()=>{
+    if(confirm('هل تريد إعادة اللعب من البداية؟ سيتم مسح تقدمك ونجومك.')) resetGame();
+  };
+  document.getElementById('winPlayAgainBtn').onclick=()=>{
+    if(confirm('هل تريد إعادة اللعب من البداية؟ سيتم مسح تقدمك ونجومك.')) resetGame();
+  };
+
+  document.getElementById('task1-next').onclick=()=>{ showStage1Sub('task2'); renderTask2(); };
+  document.getElementById('task2-next').onclick=()=>{ showStage1Sub('task3'); renderTask3(); };
+});
+</script>
+</body>
+</html>
